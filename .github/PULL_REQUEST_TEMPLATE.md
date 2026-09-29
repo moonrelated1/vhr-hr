@@ -4,8 +4,10 @@
 
 | 角色 | 姓名 | GitHub |
 |---|---|---|
-| 提交人（Author） | 杨宇恒 | @moonrelated1 |
-| 评审人（Reviewer） | 【填写你的姓名】 | @【填写你的 GitHub 用户名】 |
+| 提交人（Author） | 【杨宇恒 / 肖克锋】 | @【moonrelated1 / ZeroniAC】 |
+| 评审人（Reviewer） | 【杨宇恒 / 肖克锋】 | @【moonrelated1 / ZeroniAC】 |
+
+> 按实际情况二选一留名，不要把两个人都写上去。评审人必须与提交人不同。
 
 ---
 

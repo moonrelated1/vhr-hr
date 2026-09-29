@@ -51,8 +51,8 @@ test(employee): 补充员工入职流程测试用例
 
 ```
 【杨宇恒】feat(employee): 新增员工档案分页查询接口
-【B同学】docs: 编写需求规格说明书 v1
-【杨宇恒 / B同学】docs: 补充第二版数据库设计
+【肖克锋】docs: 编写需求规格说明书 v1
+【杨宇恒 / 肖克锋】docs: 补充第二版数据库设计
 ```
 
 姓名放在**最前面**，这样老师在 PR 列表里一眼就能看到谁做了什么。
@@ -74,7 +74,7 @@ test(employee): 补充员工入职流程测试用例
 |---|---|---|
 | #1 | 【杨宇恒】feat(employee): 员工实体与 Mapper | 建表映射 |
 | #2 | 【杨宇恒】feat(employee): 员工档案增删改查接口 | Service + Controller |
-| #3 | 【B同学】test(employee): 员工档案测试用例与执行记录 | 测试报告 |
+| #3 | 【肖克锋】test(employee): 员工档案测试用例与执行记录 | 测试报告 |
 
 拆分后 PR 数量多、颗粒度小，**提交记录的「持续更新」和「多人协作」两个要求都能同时满足**。
 
@@ -106,13 +106,13 @@ git pull origin main
 
 ## 五、两人分工
 
-### A 同学（后端与前端开发）
+### 杨宇恒（后端与前端开发）—— [@moonrelated1](https://github.com/moonrelated1)
 
 - 负责 `vhr-employee`、`vhr-salary` 模块的后端与前端实现
 - 每个功能点拆成多次提交（实体 → Mapper → Service → Controller → 前端 → 联调）
 - 发起 PR 并等待 Review
 
-### B 同学（文档、测试与质量保障）
+### 肖克锋（文档、测试与质量保障）—— [@ZeroniAC](https://github.com/ZeroniAC)
 
 不写代码同样有大量**真实且必要**的产出，每一项都对应规范的提交：
 
@@ -127,7 +127,8 @@ git pull origin main
 | 界面素材 | `vhr-vue/src/assets/` | `chore: 替换系统 logo` |
 | 演示材料 | `PPT` | — |
 
-**B 同学的 Review 职责：** 对每个 PR 进行功能验收，在 PR 中留下 Review 意见（通过 / 打回并说明原因）。**Review 记录本身就是宝贵的协作证据。**
+**肖克锋的 Review 职责：** 对每个 PR 进行功能验收，在 PR 中留下 Review 意见（通过 / 打回并说明原因）。**Review 记录本身就是宝贵的协作证据。**
+**杨宇恒的 Review 职责：** 反过来验收肖克锋提交的文档 / 测试类 PR。**两人互为 Reviewer**，这样 PR 上才会同时出现两个人的名字。
 
 ## 六、红线
 
