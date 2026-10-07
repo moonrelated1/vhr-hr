@@ -1,5 +1,12 @@
 # 智汇人力资源管理系统（ZhiHui HRMS）
 
+| | |
+|---|---|
+| **项目仓库** | https://github.com/moonrelated1/vhr-hr |
+| **课程** | 软件工程实践（2026 秋） |
+| **项目成员** | 杨宇恒（[@moonrelated1](https://github.com/moonrelated1)）、肖克锋（[@ZeroniAC](https://github.com/ZeroniAC)） |
+| **协作规范** | 见 [CONTRIBUTING.md](CONTRIBUTING.md) |
+
 > ### ⚠️ 关于本项目来源的说明（请先读这段）
 >
 > 本项目为**《软件工程实践》课程作业**，基于以下开源脚手架进行**二次开发**：
