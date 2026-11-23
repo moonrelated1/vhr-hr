@@ -1,6 +1,7 @@
 package org.javaboy.vhr.system.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -49,6 +50,12 @@ public class Employeeec implements Serializable {
      * 备注
      */
     private String remark;
+
+    /**
+     * 员工姓名，仅用于列表展示，不映射数据库字段
+     */
+    @TableField(exist = false)
+    private String empName;
 
     public Integer getId() {
         return id;
@@ -104,6 +111,14 @@ public class Employeeec implements Serializable {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public String getEmpName() {
+        return empName;
+    }
+
+    public void setEmpName(String empName) {
+        this.empName = empName;
     }
 
     @Override
