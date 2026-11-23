@@ -4,6 +4,10 @@ import {loadMenus} from "@/api/menus.js";
 import HomeView from "@/views/HomeView.vue";
 
 const modules = import.meta.glob('@/views/**/*.vue');
+
+// 本次交付聚焦员工管理模块；薪资/统计/系统管理尚未实现，不注册也不展示。
+const VISIBLE_GROUP_NAMES = ['员工资料', '人事管理'];
+
 export const useCounterStore = defineStore('counter', () => {
     const count = ref(0)
     const doubleCount = computed(() => count.value * 2)
@@ -14,10 +18,12 @@ export const useCounterStore = defineStore('counter', () => {
 
     return {count, doubleCount, increment}
 })
+
 export const menusStore = defineStore('menus', {
     state: () => (
         {
-            //这个变量就用来保存服务端返回的菜单数据，每一次页面跳转的时候，如果 menus 中有值，说明就是普通的页面点击跳转，如果这个 menus 为空，说明可能是用户按 F5 进行页面跳转的
+            // 这个变量用来保存服务端返回的菜单数据。页面跳转时如果 menus 有值，
+            // 说明是普通点击跳转；为空则可能是用户按 F5 刷新。
             menus: []
         }
     ),
@@ -28,9 +34,16 @@ export const menusStore = defineStore('menus', {
         initMenus() {
             return new Promise(resolve => {
                 loadMenus().then(res => {
-                    this.menus = res.data;
-                    let fmtMenus = formatMenus(res.data);
-                    resolve(fmtMenus);
+                    let roots = res.data || [];
+                    // 兼容后端可能返回一个「所有」根节点的情况。
+                    if (roots.length === 1 && roots[0].name === '所有' && Array.isArray(roots[0].children)) {
+                        roots = roots[0].children;
+                    }
+                    const visible = roots.filter(menu => VISIBLE_GROUP_NAMES.includes(menu.name));
+                    this.menus = visible;
+                    resolve(formatMenus(visible));
+                }).catch(() => {
+                    resolve([]);
                 })
             })
         },
@@ -42,7 +55,6 @@ function formatMenus(menus) {
     menus.forEach(menu => {
         let {path, name, children, component} = menu;
         if (children && children instanceof Array) {
-            //递归去格式化 children
             children = formatMenus(children);
         }
         let formatM = {
