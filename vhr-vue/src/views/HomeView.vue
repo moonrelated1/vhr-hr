@@ -41,7 +41,7 @@
         <el-main>
           <el-breadcrumb :separator-icon="ArrowRight" v-if="proxy.$router.currentRoute.value.path!='/home'">
             <el-breadcrumb-item :to="{ path: '/home' }">主页</el-breadcrumb-item>
-            <el-breadcrumb-item>{{ proxy.$router.currentRoute.value.name }}</el-breadcrumb-item>
+            <el-breadcrumb-item>{{ proxy.$router.currentRoute.value.meta.title || proxy.$router.currentRoute.value.name }}</el-breadcrumb-item>
           </el-breadcrumb>
           <div v-if="proxy.$router.currentRoute.value.path=='/home'" style="font-size: 35px;font-family: 华文行楷;color: red;text-align: center">欢迎来到微人事脚手架！</div>
           <RouterView/>
@@ -106,7 +106,9 @@ function formatMenus(menus) {
     }
     let formatM = {
       path: path,
-      name: name,
+      // 路由名必须唯一，菜单目录和页面可能同名
+      name: menu.id ? name + '_' + menu.id : name,
+      meta: {title: name},
       children: children,
       component: loadView(component)
     }

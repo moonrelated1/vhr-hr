@@ -47,7 +47,10 @@ function formatMenus(menus) {
         }
         let formatM = {
             path: path,
-            name: name,
+            // 菜单名可能重复（例如「员工资料」既是目录又是页面），
+            // 路由名必须唯一，否则 Vue Router 会把同名路由顶掉。
+            name: menu.id ? name + '_' + menu.id : name,
+            meta: {title: name},
             children: children,
             component: loadView(component)
         }
