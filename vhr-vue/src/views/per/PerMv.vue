@@ -1,34 +1,69 @@
 <template>
-  <div>
-    <el-form v-if="!eid" :inline="true" :model="query">
-      <el-form-item label="员工姓名">
-        <el-input v-model="query.name" placeholder="员工姓名" clearable style="width: 140px" @keyup.enter="search"/>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="search">查询</el-button>
-        <el-button @click="resetSearch">重置</el-button>
-      </el-form-item>
-    </el-form>
+  <div class="records-page" :class="{'is-embedded': !!eid}">
+    <PageHeader v-if="!eid" eyebrow="人事管理" title="调动记录"
+                subtitle="记录部门与职位调动，保存后同步更新员工档案">
+      <template #actions>
+        <el-button :icon="Refresh" :loading="loading" @click="loadData">刷新</el-button>
+        <el-button type="primary" :icon="Plus" @click="openAdd">新增调动记录</el-button>
+      </template>
+    </PageHeader>
 
-    <div class="toolbar">
-      <el-button type="primary" @click="openAdd">新增调动记录</el-button>
-    </div>
+    <section v-if="!eid" class="section-card filter-card">
+      <div class="filter-head">
+        <div><span class="filter-title">筛选条件</span></div>
+        <el-button link @click="resetSearch">清空筛选</el-button>
+      </div>
+      <el-form :inline="true" :model="query" class="filter-form">
+        <el-form-item label="员工姓名">
+          <el-input v-model="query.name" placeholder="员工姓名" clearable style="width: 170px"
+                    @keyup.enter="search"/>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" :icon="Search" @click="search">查询</el-button>
+          <el-button @click="resetSearch">重置</el-button>
+        </el-form-item>
+      </el-form>
+    </section>
 
-    <el-table :data="records" v-loading="loading" border stripe>
-      <el-table-column v-if="!eid" prop="empName" label="员工姓名" width="110"/>
-      <el-table-column prop="removeDate" label="调动日期" width="120"/>
-      <el-table-column prop="afterDepName" label="调动后部门" min-width="120"/>
-      <el-table-column prop="afterJobName" label="调动后职位" min-width="130"/>
-      <el-table-column prop="reason" label="调动原因" min-width="180"/>
-      <el-table-column prop="remark" label="备注" min-width="140"/>
-      <el-table-column label="操作" width="90">
-        <template #default="scope">
-          <el-button size="small" type="danger" @click="handleDelete(scope.row)">删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+    <section class="section-card table-card">
+      <div class="table-head">
+        <div>
+          <strong>{{ eid ? '调动记录' : '记录列表' }}</strong>
+          <span class="table-count">共 {{ records.length }} 条</span>
+        </div>
+        <el-button v-if="eid" type="primary" size="small" :icon="Plus" @click="openAdd">新增调动记录</el-button>
+      </div>
+      <el-table :data="records" v-loading="loading" empty-text="暂无调动记录">
+        <el-table-column v-if="!eid" label="员工姓名" width="150">
+          <template #default="{row}">
+            <div class="emp-cell">
+              <EmployeeAvatar :name="row.empName" :seed="row.eid" :size="26"/>
+              <span>{{ row.empName || '-' }}</span>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column prop="removeDate" label="调动日期" width="120"/>
+        <el-table-column label="调动后部门" min-width="140">
+          <template #default="{row}">
+            <el-tag type="info" effect="plain" round>{{ row.afterDepName || '-' }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="afterJobName" label="调动后职位" min-width="140">
+          <template #default="{row}">{{ row.afterJobName || '-' }}</template>
+        </el-table-column>
+        <el-table-column prop="reason" label="调动原因" min-width="180" show-overflow-tooltip/>
+        <el-table-column prop="remark" label="备注" min-width="140" show-overflow-tooltip>
+          <template #default="{row}">{{ row.remark || '-' }}</template>
+        </el-table-column>
+        <el-table-column label="操作" width="80" align="right">
+          <template #default="scope">
+            <el-button link type="danger" @click="handleDelete(scope.row)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </section>
 
-    <el-dialog v-model="dialogVisible" title="新增调动记录" width="520px">
+    <el-dialog v-model="dialogVisible" title="新增调动记录" width="540px" :close-on-click-modal="false">
       <el-alert title="保存后将同步更新员工档案中的部门与职位" type="warning"
                 :closable="false" show-icon style="margin-bottom: 16px"/>
       <el-form :model="form" :rules="rules" ref="formRef" label-width="100px">
@@ -40,15 +75,15 @@
           </el-select>
         </el-form-item>
         <el-form-item v-else label="员工">
-          <span>{{ empName || ('员工编号 ' + eid) }}</span>
+          <span class="form-static">{{ empName || ('员工编号 ' + eid) }}</span>
         </el-form-item>
         <el-form-item label="调动后部门" prop="afterDepId">
-          <el-select v-model="form.afterDepId" style="width: 100%">
+          <el-select v-model="form.afterDepId" style="width: 100%" placeholder="请选择部门">
             <el-option v-for="d in dicts.departments" :key="d.id" :label="d.name" :value="d.id"/>
           </el-select>
         </el-form-item>
         <el-form-item label="调动后职位" prop="afterJobId">
-          <el-select v-model="form.afterJobId" style="width: 100%">
+          <el-select v-model="form.afterJobId" style="width: 100%" placeholder="请选择职位">
             <el-option v-for="p in dicts.positions" :key="p.id" :label="p.name" :value="p.id"/>
           </el-select>
         </el-form-item>
@@ -57,7 +92,7 @@
                           placeholder="选择日期" style="width: 100%"/>
         </el-form-item>
         <el-form-item label="调动原因" prop="reason">
-          <el-input v-model="form.reason" maxlength="100"/>
+          <el-input v-model="form.reason" maxlength="100" placeholder="如：业务线调整"/>
         </el-form-item>
         <el-form-item label="备注">
           <el-input v-model="form.remark" type="textarea" :rows="2" maxlength="200"/>
@@ -72,10 +107,13 @@
 </template>
 
 <script setup>
-import {nextTick, onMounted, reactive, ref, toRefs, watch} from "vue";
-import {ElMessageBox} from "element-plus";
-import {loadDicts, loadEmployees} from "@/api/employee/employee.js";
-import {addMove, deleteMove, loadMoveRecords} from "@/api/employee/record.js";
+import {nextTick, onMounted, reactive, ref, toRefs, watch} from 'vue';
+import {ElMessageBox} from 'element-plus';
+import {Plus, Refresh, Search} from '@element-plus/icons-vue';
+import PageHeader from '@/components/common/PageHeader.vue';
+import EmployeeAvatar from '@/components/employee/EmployeeAvatar.vue';
+import {loadDicts, loadEmployees} from '@/api/employee/employee.js';
+import {addMove, deleteMove, loadMoveRecords} from '@/api/employee/record.js';
 
 const props = defineProps({
   eid: {type: Number, default: null},
@@ -186,7 +224,27 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.toolbar {
-  margin-bottom: 12px;
+.emp-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #36435a;
+}
+
+.is-embedded {
+  padding: 0;
+}
+
+.is-embedded .table-card {
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.form-static {
+  color: #36435a;
+  font-weight: 600;
 }
 </style>

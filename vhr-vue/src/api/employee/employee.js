@@ -10,6 +10,30 @@ export function loadEmployees(params) {
     })
 }
 
+/**
+ * 后端分页接口将 size 上限限制为 100。看板和导出需要全量员工时，
+ * 先取第一页拿到 total，再并行拉取剩余页并合并，避免修改后端接口。
+ */
+export async function loadAllEmployees(params = {}) {
+    const pageSize = 100;
+    const first = await loadEmployees({...params, page: 1, size: pageSize});
+    const rows = [...(first.data || [])];
+    const total = first.total || 0;
+    if (rows.length >= total) {
+        return rows;
+    }
+    const pages = Math.ceil(total / pageSize);
+    const requests = [];
+    for (let page = 2; page <= pages; page++) {
+        requests.push(loadEmployees({...params, page, size: pageSize}));
+    }
+    const rest = await Promise.all(requests);
+    rest.forEach(result => {
+        rows.push(...(result.data || []));
+    });
+    return rows;
+}
+
 export function getEmployeeById(id) {
     return request({
         url: '/api/employee/basic/get/' + id,
